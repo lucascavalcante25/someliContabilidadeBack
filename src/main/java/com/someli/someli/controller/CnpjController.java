@@ -12,7 +12,7 @@ import com.someli.someli.dto.CnpjResponseDTO;
 import com.someli.someli.service.CnpjService;
 
 @RestController
-@RequestMapping("/someli/consultaCNPJ")
+@RequestMapping("/someli/api/consultaCNPJ")
 @CrossOrigin(origins = "https://localhost:4200", allowedHeaders = "*", methods = { RequestMethod.GET,
 		RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE })
 public class CnpjController {
