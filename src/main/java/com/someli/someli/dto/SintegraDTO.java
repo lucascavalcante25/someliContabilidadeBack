@@ -8,6 +8,16 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 public class SintegraDTO {
 
+	// ✅ Construtor vazio (necessário para a desserialização do Jackson)
+	public SintegraDTO() {
+	}
+
+	// ✅ Construtor para criar um DTO de erro
+	public SintegraDTO(int code, String codeMessage) {
+		this.code = code;
+		this.codeMessage = codeMessage;
+	}
+
 	@JsonProperty("code")
 	private int code;
 

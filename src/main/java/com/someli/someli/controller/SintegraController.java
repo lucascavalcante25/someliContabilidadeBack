@@ -30,11 +30,19 @@ public class SintegraController {
 		try {
 			SintegraDTO sintegraDTO = sintegraService.consultarSintegra(request.getUf(), request.getCnpj(),
 					request.getIe(), request.getIeProdutor(), request.getCpf());
+
+			// 🔥 Se houver erro, retorna o código e a mensagem de erro
+			if (sintegraDTO.getCode() != 200) {
+				return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(sintegraDTO);
+			}
+
 			return ResponseEntity.ok(sintegraDTO);
 		} catch (IllegalArgumentException e) {
-			return ResponseEntity.badRequest().body(null);
+			return ResponseEntity.badRequest().body(new SintegraDTO(400, e.getMessage()));
 		} catch (Exception e) {
-			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(null);
+			return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+					.body(new SintegraDTO(500, "Erro interno ao consultar o Sintegra."));
 		}
 	}
+
 }
