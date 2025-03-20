@@ -15,11 +15,21 @@ public class DataConfiguration {
 	public DataSource dataSource() {
 		DriverManagerDataSource dataSource = new DriverManagerDataSource();
 		dataSource.setDriverClassName("org.postgresql.Driver");
-		dataSource.setUrl(System.getenv("SPRING_DATASOURCE_URL"));
-		dataSource.setUsername(System.getenv("SPRING_DATASOURCE_USERNAME"));
-		dataSource.setPassword(System.getenv("SPRING_DATASOURCE_PASSWORD"));
+		dataSource.setUrl("jdbc:postgresql://localhost:5432/SomeliApp");
+		dataSource.setUsername("postgres");
+		dataSource.setPassword("postgres");
 		return dataSource;
 	}
+
+//	  @Bean
+//	    public DataSource dataSource() {
+//	        DriverManagerDataSource dataSource = new DriverManagerDataSource();
+//	        dataSource.setDriverClassName("org.postgresql.Driver");
+//	        dataSource.setUrl(System.getenv("SPRING_DATASOURCE_URL"));
+//	        dataSource.setUsername(System.getenv("SPRING_DATASOURCE_USERNAME"));
+//	        dataSource.setPassword(System.getenv("SPRING_DATASOURCE_PASSWORD"));
+//	        return dataSource;
+//	    }
 
 	@Bean
 	public JpaVendorAdapter jpaVendorAdapter() {
@@ -29,17 +39,4 @@ public class DataConfiguration {
 		adapter.setGenerateDdl(true);
 		return adapter;
 	}
-	
-    // Remova este Bean para que o Spring Boot use as variáveis de ambiente configuradas no Render
-    /*
-    @Bean
-    public DataSource dataSource() {
-        DriverManagerDataSource dataSource = new DriverManagerDataSource();
-        dataSource.setDriverClassName("org.postgresql.Driver");
-        dataSource.setUrl("jdbc:postgresql://localhost:5432/SomeliApp");
-        dataSource.setUsername("postgres");
-        dataSource.setPassword("postgres");
-        return dataSource;
-    }
-    */
 }

@@ -2,6 +2,7 @@ package com.someli.someli.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -29,6 +30,7 @@ public class ClienteService {
 		ClienteDTO dto = new ClienteDTO();
 		dto.setNome(cliente.getRazaoSocial());
 		dto.setCnpj(cliente.getCnpj());
+		dto.setNomeProprietario(cliente.getNomeProprietario());
 		dto.setEmail(cliente.getEmail());
 		dto.setTelefone(cliente.getTelefone());
 		dto.setHonorario(cliente.getValorHonorario());
@@ -45,7 +47,7 @@ public class ClienteService {
 		for (Cliente list : listaDeClientes) {
 
 			ClienteDTO dto = new ClienteDTO();
-
+			dto.setClienteId(list.getId());
 			dto.setNome(list.getRazaoSocial());
 			dto.setCnpj(list.getCnpj());
 			dto.setEmail(list.getEmail());
@@ -75,4 +77,36 @@ public class ClienteService {
 
 		return clienteRepository.save(cliente);
 	}
+
+	public Optional<Cliente> atualizarCliente(Long id, ClienteDTO clienteDTO) {
+		return clienteRepository.findById(id).map(cliente -> {
+			if (clienteDTO.getNome() != null)
+				cliente.setRazaoSocial(clienteDTO.getNome());
+			if (clienteDTO.getNomeProprietario() != null)
+				cliente.setNomeProprietario(clienteDTO.getNomeProprietario());
+			if (clienteDTO.getCnpj() != null)
+				cliente.setCnpj(clienteDTO.getCnpj());
+			if (clienteDTO.getTelefone() != null)
+				cliente.setTelefone(clienteDTO.getTelefone());
+			if (clienteDTO.getEmail() != null)
+				cliente.setEmail(clienteDTO.getEmail());
+			if (clienteDTO.getHonorario() != null)
+				cliente.setValorHonorario(clienteDTO.getHonorario());
+			if (clienteDTO.getVencimento() != null)
+				cliente.setDiaVencimento(clienteDTO.getVencimento());
+			if (clienteDTO.getPagamento() != null)
+				cliente.setOrdemPagamento(clienteDTO.getPagamento());
+
+			return clienteRepository.save(cliente);
+		});
+	}
+
+	public void excluirCliente(Long id) {
+		if (clienteRepository.existsById(id)) {
+			clienteRepository.deleteById(id);
+		} else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado");
+		}
+	}
+
 }

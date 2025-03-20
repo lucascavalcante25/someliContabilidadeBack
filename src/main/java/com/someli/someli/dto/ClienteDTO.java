@@ -1,14 +1,23 @@
 package com.someli.someli.dto;
 
 public class ClienteDTO {
+	private Long clienteId;
 	private String cnpj;
-	private String nome; // No frontend está "nome", mas no backend é "razaoSocial"
-	private String nomeProprietario; // 🚀 Novo campo adicionado ao frontend
+	private String nome; 
+	private String nomeProprietario; 
 	private String telefone;
 	private String email;
 	private Double honorario;
 	private Long vencimento;
 	private Long pagamento;
+
+	public Long getClienteId() {
+		return clienteId;
+	}
+
+	public void setClienteId(Long clienteId) {
+		this.clienteId = clienteId;
+	}
 
 	public String getCnpj() {
 		return cnpj;
