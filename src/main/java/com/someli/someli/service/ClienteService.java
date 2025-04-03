@@ -40,12 +40,11 @@ public class ClienteService {
 	}
 
 	public List<ClienteDTO> listarTodos() {
-		List<Cliente> listaDeClientes = clienteRepository.findAll();
+		List<Cliente> listaDeClientes = clienteRepository.findByAtivoTrue(); // Somente ativos
 
 		List<ClienteDTO> listaDeClientesDTO = new ArrayList<>();
 
 		for (Cliente list : listaDeClientes) {
-
 			ClienteDTO dto = new ClienteDTO();
 			dto.setClienteId(list.getId());
 			dto.setNome(list.getRazaoSocial());
@@ -56,8 +55,8 @@ public class ClienteService {
 			dto.setHonorario(list.getValorHonorario());
 			dto.setPagamento(list.getOrdemPagamento());
 			dto.setVencimento(list.getDiaVencimento());
-			listaDeClientesDTO.add(dto);
 
+			listaDeClientesDTO.add(dto);
 		}
 
 		return listaDeClientesDTO;
@@ -74,6 +73,7 @@ public class ClienteService {
 		cliente.setValorHonorario(clienteDTO.getHonorario());
 		cliente.setDiaVencimento(clienteDTO.getVencimento());
 		cliente.setOrdemPagamento(clienteDTO.getPagamento());
+		cliente.setAtivo(true);
 
 		return clienteRepository.save(cliente);
 	}
@@ -102,11 +102,16 @@ public class ClienteService {
 	}
 
 	public void excluirCliente(Long id) {
-		if (clienteRepository.existsById(id)) {
-			clienteRepository.deleteById(id);
-		} else {
-			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado");
-		}
+	    Optional<Cliente> clienteOptional = clienteRepository.findById(id);
+
+	    if (clienteOptional.isPresent()) {
+	        Cliente cliente = clienteOptional.get();
+	        cliente.setAtivo(false);
+	        clienteRepository.save(cliente);
+	    } else {
+	        throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Cliente não encontrado");
+	    }
 	}
+
 
 }

@@ -46,6 +46,9 @@ public class Cliente implements Serializable {
 
 	@Column(name = "ORDEM_PAGAMENTO")
 	private Long ordemPagamento;
+	
+	@Column(name = "ATIVO")
+	private Boolean ativo;
 
 	public Long getId() {
 		return id;
@@ -119,10 +122,19 @@ public class Cliente implements Serializable {
 		this.ordemPagamento = ordemPagamento;
 	}
 
+	
+	public Boolean getAtivo() {
+		return ativo;
+	}
+
+	public void setAtivo(Boolean ativo) {
+		this.ativo = ativo;
+	}
+
 	@Override
 	public int hashCode() {
-		return Objects.hash(cnpj, diaVencimento, email, id, nomeProprietario, ordemPagamento, razaoSocial, telefone,
-				valorHonorario);
+		return Objects.hash(ativo, cnpj, diaVencimento, email, id, nomeProprietario, ordemPagamento, razaoSocial,
+				telefone, valorHonorario);
 	}
 
 	@Override
@@ -134,9 +146,9 @@ public class Cliente implements Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Cliente other = (Cliente) obj;
-		return Objects.equals(cnpj, other.cnpj) && Objects.equals(diaVencimento, other.diaVencimento)
-				&& Objects.equals(email, other.email) && Objects.equals(id, other.id)
-				&& Objects.equals(nomeProprietario, other.nomeProprietario)
+		return Objects.equals(ativo, other.ativo) && Objects.equals(cnpj, other.cnpj)
+				&& Objects.equals(diaVencimento, other.diaVencimento) && Objects.equals(email, other.email)
+				&& Objects.equals(id, other.id) && Objects.equals(nomeProprietario, other.nomeProprietario)
 				&& Objects.equals(ordemPagamento, other.ordemPagamento)
 				&& Objects.equals(razaoSocial, other.razaoSocial) && Objects.equals(telefone, other.telefone)
 				&& Objects.equals(valorHonorario, other.valorHonorario);
