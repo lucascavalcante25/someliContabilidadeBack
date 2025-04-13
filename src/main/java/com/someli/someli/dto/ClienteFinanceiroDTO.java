@@ -1,15 +1,25 @@
 package com.someli.someli.dto;
 
 public class ClienteFinanceiroDTO {
-	private Long clienteId;
-	private String nome;
-	private Long pagamento;
-	private Long vencimento;
-	private Double honorario;
-	private Boolean pago;
+    private Long id; // <-- ID do PagamentoCliente
+    private Long clienteId;
+    private String nome;
+    private Long pagamento;
+    private Long vencimento;
+    private Double honorario;
+    private Boolean pago;
+    // getters e setters
 
 	public Long getClienteId() {
 		return clienteId;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public void setClienteId(Long clienteId) {

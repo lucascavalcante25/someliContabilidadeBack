@@ -2,11 +2,9 @@ package com.someli.someli.controller;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.someli.someli.dto.SintegraDTO;
@@ -15,8 +13,6 @@ import com.someli.someli.service.SintegraService;
 
 @RestController
 @RequestMapping("/someli/api/sintegra")
-@CrossOrigin(origins = "https://localhost:4200", allowedHeaders = "*", methods = { RequestMethod.GET,
-		RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE })
 public class SintegraController {
 
 	private final SintegraService sintegraService;
