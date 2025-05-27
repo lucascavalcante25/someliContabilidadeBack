@@ -12,33 +12,45 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.someli.someli.dto.ClienteFinanceiroDTO;
+import com.someli.someli.dto.DespesaFinanceiraDTO;
+import com.someli.someli.service.DespesaService;
 import com.someli.someli.service.FinanceiroService;
 
 @RestController
 @RequestMapping("/api/financeiro")
 public class FinanceiroController {
 
-    @Autowired
-    private FinanceiroService financeiroService;
+	@Autowired
+	private FinanceiroService financeiroService;
 
-    @GetMapping("/clientes/ativos")
-    public List<ClienteFinanceiroDTO> buscarClientesAtivos() {
-        return financeiroService.buscarClientesAtivos();
-    }
+	@Autowired
+	private DespesaService despesaService;
 
-    @GetMapping("/clientes/financeiro")
-    public List<ClienteFinanceiroDTO> buscarClientesFinanceiros(@RequestParam String mes,
-                                                                 @RequestParam Integer ano) {
-        return financeiroService.buscarClientesFinanceiros(mes, ano);
-    }
+	@GetMapping("/clientes/ativos")
+	public List<ClienteFinanceiroDTO> buscarClientesAtivos() {
+		return financeiroService.buscarClientesAtivos();
+	}
 
-    @PutMapping("/pagamentos/status")
-    public ResponseEntity<Void> atualizarPagamentoCliente(@RequestParam Long clienteId,
-                                                          @RequestParam String mes,
-                                                          @RequestParam Integer ano,
-                                                          @RequestBody Boolean pago) {
-        financeiroService.atualizarPagamentoCliente(clienteId, pago, mes, ano);
-        return ResponseEntity.ok().build();
-    }
+	@GetMapping("/clientes/financeiro")
+	public List<ClienteFinanceiroDTO> buscarClientesFinanceiros(@RequestParam String mes, @RequestParam Integer ano) {
+		return financeiroService.buscarClientesFinanceiros(mes, ano);
+	}
+
+	@PutMapping("/pagamentos/status")
+	public ResponseEntity<Void> atualizarPagamentoCliente(@RequestParam Long clienteId, @RequestParam String mes,
+			@RequestParam Integer ano, @RequestBody Boolean pago) {
+		financeiroService.atualizarPagamentoCliente(clienteId, pago, mes, ano);
+		return ResponseEntity.ok().build();
+	}
+
+	@GetMapping("/despesas/financeiro")
+	public List<DespesaFinanceiraDTO> buscarDespesasPorMesEAno(@RequestParam String mes, @RequestParam int ano) {
+		return despesaService.buscarDespesasPorMesEAno(mes, ano);
+	}
+
+	@PutMapping("/despesas/status")
+	public void atualizarStatusDespesa(@RequestParam Long despesaId, @RequestParam boolean paga) {
+		despesaService.atualizarStatusDespesa(despesaId, paga);
+	}
+
 }
-

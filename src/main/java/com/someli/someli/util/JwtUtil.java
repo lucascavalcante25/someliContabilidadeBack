@@ -15,7 +15,7 @@ public class JwtUtil {
 
 	private final String SECRET = "MinhaChaveSecretaMuitoForteMesmoParaJwtCom256Bits!";
 
-	private final long EXPIRATION = 3600000; // 1 hora
+	private final long EXPIRATION = 8 * 60 * 60 * 1000; // 8 horas em milissegundos
 
 	private Key getChave() {
 		return Keys.hmacShaKeyFor(SECRET.getBytes());

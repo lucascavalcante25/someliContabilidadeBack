@@ -1,4 +1,4 @@
-package com.someli.someli;
+package com.someli.someli.configuration;
 
 import javax.sql.DataSource;
 
