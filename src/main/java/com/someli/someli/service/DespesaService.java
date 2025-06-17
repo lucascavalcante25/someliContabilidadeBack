@@ -1,7 +1,6 @@
 package com.someli.someli.service;
 
 import java.time.LocalDate;
-import java.time.Month;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -12,7 +11,9 @@ import org.springframework.transaction.annotation.Transactional;
 import com.someli.someli.dto.DespesaDTO;
 import com.someli.someli.dto.DespesaFinanceiraDTO;
 import com.someli.someli.model.Despesa;
+import com.someli.someli.model.PagamentoDespesa;
 import com.someli.someli.repository.DespesaRepository;
+import com.someli.someli.repository.PagamentoDespesaRepository;
 
 import jakarta.persistence.EntityNotFoundException;
 
@@ -22,6 +23,9 @@ public class DespesaService {
 	@Autowired
 	private DespesaRepository despesaRepository;
 
+	@Autowired
+	private PagamentoDespesaRepository pagamentoDespesaRepository;
+
 	public Despesa salvar(DespesaDTO dto) {
 		Despesa despesa = new Despesa();
 		despesa.setId(dto.getId());
@@ -30,6 +34,7 @@ public class DespesaService {
 		despesa.setTipoDespesa(dto.getTipo());
 		despesa.setParcelas(dto.getParcelas());
 		despesa.setDataInicio(dto.getDataInicio());
+		despesa.setDiaPagamento(dto.getDiaPagamento());
 		despesa.setAtivo(dto.getAtiva() != null ? dto.getAtiva() : true);
 		return despesaRepository.save(despesa);
 	}
@@ -83,8 +88,9 @@ public class DespesaService {
 		int numeroMes = obterNumeroDoMes(mes);
 
 		return despesaRepository.findAll().stream().filter(d -> {
-			if (!Boolean.TRUE.equals(d.getAtivo()))
-				return false;
+			if (!Boolean.TRUE.equals(d.getAtivo()) && d.getTipoDespesa() != 3) {
+				return false; // Apenas tipo 3 (Pessoal) pode ter histórico mesmo inativo
+			}
 
 			LocalDate dataInicio = d.getDataInicio();
 			if (dataInicio == null)
@@ -92,25 +98,37 @@ public class DespesaService {
 
 			int mesInicio = dataInicio.getMonthValue();
 			int anoInicio = dataInicio.getYear();
+			LocalDate dataReferencia = LocalDate.of(ano, numeroMes, 1);
 
 			switch (d.getTipoDespesa()) {
-			case 1:
-				return (ano > anoInicio) || (ano == anoInicio && numeroMes >= mesInicio);
+			case 1: // Recorrente
+				return !dataReferencia.isBefore(dataInicio.withDayOfMonth(1));
 
-			case 2:
+			case 2: // Pontual
 				if (d.getParcelas() == null || d.getParcelas() <= 0)
 					return false;
-				int mesesDesdeInicio = (ano - anoInicio) * 12 + (numeroMes - mesInicio + 1);
-				return mesesDesdeInicio >= 1 && mesesDesdeInicio <= d.getParcelas();
+				LocalDate dataFim = dataInicio.plusMonths(d.getParcelas() - 1);
+				return !dataReferencia.isBefore(dataInicio.withDayOfMonth(1))
+						&& !dataReferencia.isAfter(dataFim.withDayOfMonth(1));
 
-			case 3:
-				return ano == anoInicio && numeroMes == mesInicio;
+			case 3: // Pessoal
+				if (Boolean.TRUE.equals(d.getAtivo())) {
+					return !dataReferencia.isBefore(dataInicio.withDayOfMonth(1));
+				} else {
+					// se estiver inativo, só aparece se o mês atual for antes ou igual ao da
+					// inativação
+					return !dataReferencia.isAfter(dataInicio.withDayOfMonth(1));
+				}
 
 			default:
 				return false;
 			}
-		}).map(d -> new DespesaFinanceiraDTO(d.getId(), d.getDescricao(), d.getValorMensal(), d.getDataInicio(),
-				d.getPaga())).collect(Collectors.toList());
+		}).map(d -> {
+			boolean pago = pagamentoDespesaRepository.findByDespesaIdAndMesAndAno(d.getId(), mes, ano)
+					.map(PagamentoDespesa::getPago).orElse(false);
+
+			return new DespesaFinanceiraDTO(d.getId(), d.getDescricao(), d.getValorMensal(), d.getDataInicio(),d.getDiaPagamento(), pago);
+		}).collect(Collectors.toList());
 	}
 
 	private int obterNumeroDoMes(String mes) {
@@ -132,11 +150,22 @@ public class DespesaService {
 	}
 
 	@Transactional
-	public void atualizarStatusDespesa(Long id, boolean pago) {
-		Despesa despesa = despesaRepository.findById(id)
+	public void atualizarStatusDespesaMensal(Long despesaId, String mes, int ano, Boolean pago) {
+		Despesa despesa = despesaRepository.findById(despesaId)
 				.orElseThrow(() -> new EntityNotFoundException("Despesa não encontrada"));
-		despesa.setPaga(pago);
-		despesaRepository.save(despesa);
+
+		PagamentoDespesa pagamento = pagamentoDespesaRepository.findByDespesaIdAndMesAndAno(despesaId, mes, ano)
+				.orElseGet(() -> {
+					PagamentoDespesa novo = new PagamentoDespesa();
+					novo.setDespesa(despesa);
+					novo.setMes(mes);
+					novo.setAno(ano);
+					novo.setValor(despesa.getValorMensal().doubleValue()); // ✅ conversão aqui
+					return novo;
+				});
+
+		pagamento.setPago(pago);
+		pagamentoDespesaRepository.save(pagamento);
 	}
 
 }

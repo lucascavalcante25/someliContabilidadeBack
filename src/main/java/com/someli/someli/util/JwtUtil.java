@@ -28,7 +28,12 @@ public class JwtUtil {
 	}
 
 	public String getCpfDoToken(String token) {
-		return Jwts.parserBuilder().setSigningKey(getChave()).build().parseClaimsJws(token).getBody().getSubject();
+		try {
+			return Jwts.parserBuilder().setSigningKey(getChave()).build().parseClaimsJws(token).getBody().getSubject();
+		} catch (JwtException e) {
+			System.out.println("Erro ao extrair CPF do token: " + e.getMessage());
+			return null;
+		}
 	}
 
 	public boolean validarToken(String token) {

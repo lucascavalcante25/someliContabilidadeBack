@@ -49,8 +49,9 @@ public class FinanceiroController {
 	}
 
 	@PutMapping("/despesas/status")
-	public void atualizarStatusDespesa(@RequestParam Long despesaId, @RequestParam boolean paga) {
-		despesaService.atualizarStatusDespesa(despesaId, paga);
+	public void atualizarStatusDespesa(@RequestParam Long despesaId, @RequestParam String mes, @RequestParam int ano,
+			@RequestBody Boolean pago) {
+		despesaService.atualizarStatusDespesaMensal(despesaId, mes, ano, pago);
 	}
 
 }
