@@ -26,11 +26,9 @@ public class SecurityConfig {
 
 	@Bean
 	public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-		return http.csrf(csrf -> csrf.disable())
+		return http.csrf(csrf -> csrf.disable()).cors(cors -> cors.configurationSource(corsConfigurationSource()))
 				.authorizeHttpRequests(auth -> auth.requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
-						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll() // CORS preflight
-						.anyRequest().authenticated())
-				.cors(Customizer.withDefaults())
+						.requestMatchers(HttpMethod.OPTIONS, "/**").permitAll().anyRequest().authenticated())
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class).build();
 	}
 
@@ -39,9 +37,9 @@ public class SecurityConfig {
 		CorsConfiguration config = new CorsConfiguration();
 
 		config.setAllowedOrigins(List.of("http://localhost:4200", "https://someli-contabilidade-web.vercel.app"));
-
 		config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-		config.setAllowedHeaders(List.of("*"));
+		config.setAllowedHeaders(List.of("Authorization", "Content-Type", "X-Requested-With"));
+		config.setExposedHeaders(List.of("Authorization"));
 		config.setAllowCredentials(true);
 
 		UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

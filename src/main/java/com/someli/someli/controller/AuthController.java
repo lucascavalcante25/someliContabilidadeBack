@@ -16,7 +16,6 @@ import com.someli.someli.model.Usuario;
 import com.someli.someli.repository.UsuarioRepository;
 import com.someli.someli.util.JwtUtil;
 
-@CrossOrigin(origins = { "http://localhost:4200", "https://someli-contabilidade-web.vercel.app" }, allowCredentials = "true")
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
